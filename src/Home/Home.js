@@ -15,7 +15,6 @@ const Home = () => {
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
-      alert('Logged out successfully.');
       navigate('/'); 
     } catch (error) {
       console.error('Error logging out:', error.message);
