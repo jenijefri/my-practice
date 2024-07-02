@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,26 +13,36 @@ const Login = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    const loginTime = localStorage.getItem('loginTime');
+    const currentTime = Date.now();
+    const tenMinutes = 10 * 60 * 1000;
+
+    if (storedUser && (currentTime - loginTime <= tenMinutes)) {
+      navigate('/home');
+    }
+  }, [navigate]);
+
   const handleLogin = async () => {
     try {
-      const { user, session, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
       });
-
-      console.log('Login response:', { user, session, error });
       console.log("email")
       console.log(email);
       console.log("password")
       console.log(password);
-
       if (error) {
         throw new Error('Error logging in: ' + error.message);
       }
 
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('loginTime', Date.now());
+
       alert('Login successful.');
-      navigate('/home', { state: { email } });
-      // Navigate to home page after successful login
+      navigate('/home');
     } catch (error) {
       console.error('Unexpected error:', error.message);
       setError('Unexpected error: ' + error.message);
@@ -45,7 +55,7 @@ const Login = () => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <div>
         <label>
-          Email:
+           E-mail:
           <input
             className="login-input"
             type="text"
