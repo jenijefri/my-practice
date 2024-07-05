@@ -10,10 +10,14 @@ const Home = () => {
     const loginTime = localStorage.getItem('loginTime');
     const currentTime = Date.now();
     const tenMinutes = 10 * 60 * 1000;
+    console.log("stored user")
+    // convert the JSON file in
+    console.log(JSON.parse(localStorage.getItem('user')));
+    //console.log(loginTime);
 
     if (!storedUser || (currentTime - loginTime > tenMinutes)) {
-      localStorage.removeItem('user');
-      localStorage.removeItem('loginTime');
+     // localStorage.removeItem('user');
+     // localStorage.removeItem('loginTime');
       navigate('/login');
     } else {
       setUser(storedUser);
