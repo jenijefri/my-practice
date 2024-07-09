@@ -64,8 +64,6 @@ const Login = () => {
 
       console.log("Stored User JSON:", JSON.stringify(data.user));
       console.log("Stored Login Time:", localStorage.getItem('loginTime'));
-
-      alert('Login successful.');
       navigate('/home');
     } catch (error) {
       console.error('Unexpected error:', error.message);
