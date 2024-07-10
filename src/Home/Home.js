@@ -18,11 +18,11 @@ const Home = () => {
       setUser(storedUser);
       // fetchDataFromGoogleSheet();
       // For demonstration, initializing with some sample data
-      setSheetData([
-        ['Option 1', 'Task A', 'Option A', 'Start Date 1', 'End Date 1', 'In Progress', 'Note A'],
-        ['Option 2', 'Task B', 'Option B', 'Start Date 2', 'End Date 2', 'Completed', 'Note B'],
-        ['Option 3', 'Task C', 'Option C', 'Start Date 3', 'End Date 3', 'Pending', 'Note C'],
-      ]);
+      //setSheetData([
+       // ['Option 1', 'Task A', 'Option A', 'Start Date 1', 'End Date 1', 'In Progress', 'Note A'],
+        //['Option 2', 'Task B', 'Option B', 'Start Date 2', 'End Date 2', 'Completed', 'Note B'],
+        //['Option 3', 'Task C', 'Option C', 'Start Date 3', 'End Date 3', 'Pending', 'Note C'],
+      //]);
     }
   }, [navigate]);
 
