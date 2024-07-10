@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { gapi } from 'gapi-script';
 
 const Home = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [sheetData, setSheetData] = useState([]);
-  const [newRow, setNewRow] = useState(['', '', '', '', '', '', '']);
-  const [editingRowIndex, setEditingRowIndex] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isAddingNew, setIsAddingNew] = useState(false);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -21,18 +16,15 @@ const Home = () => {
       navigate('/login');
     } else {
       setUser(storedUser);
-     // fetchDataFromGoogleSheet();
+      // fetchDataFromGoogleSheet();
+      // For demonstration, initializing with some sample data
+      setSheetData([
+        ['Option 1', 'Task A', 'Option A', 'Start Date 1', 'End Date 1', 'In Progress', 'Note A'],
+        ['Option 2', 'Task B', 'Option B', 'Start Date 2', 'End Date 2', 'Completed', 'Note B'],
+        ['Option 3', 'Task C', 'Option C', 'Start Date 3', 'End Date 3', 'Pending', 'Note C'],
+      ]);
     }
   }, [navigate]);
-
-  //const fetchDataFromGoogleSheet = () => {
-    // Simulated data fetching
-    //const mockData = [
-     // ['Task 1', 'Details 1', '2024-07-10', '2024-07-15', '2024-07-10', 'In Progress', 'Some notes'],
-     // ['Task 2', 'Details 2', '2024-07-12', '2024-07-18', '2024-07-12', 'Completed', 'Notes here'],
-   // ];
-   // setSheetData(mockData);
-  //};
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -40,91 +32,30 @@ const Home = () => {
     navigate('/login');
   };
 
-  const handleEditClick = (rowIndex) => {
-    setEditingRowIndex(rowIndex);
-    setNewRow([...sheetData[rowIndex]]);
-    setIsEditing(true);
-  };
-
-  const handleSaveClick = () => {
-    const updatedSheetData = [...sheetData];
-    if (editingRowIndex !== null) {
-      updatedSheetData[editingRowIndex] = [...newRow];
-    } else {
-      updatedSheetData.push([...newRow]);
-    }
-    setSheetData(updatedSheetData);
-    setNewRow(['', '', '', '', '', '', '']);
-    setEditingRowIndex(null);
-    setIsEditing(false);
-    setIsAddingNew(false);
-  };
-
   const handleDeleteClick = (rowIndex) => {
     const updatedSheetData = sheetData.filter((_, index) => index !== rowIndex);
     setSheetData(updatedSheetData);
-    setNewRow(['', '', '', '', '', '', '']);
-    setEditingRowIndex(null);
-    setIsEditing(false);
   };
 
-  const handleInputChange = (index, value) => {
-    const updatedRow = [...newRow];
-    updatedRow[index] = value;
-    setNewRow(updatedRow);
+  const handleInputChange = (rowIndex, cellIndex, value) => {
+    const updatedSheetData = sheetData.map((row, index) => {
+      if (index === rowIndex) {
+        return row.map((cell, idx) => (idx === cellIndex ? value : cell));
+      }
+      return row;
+    });
+    setSheetData(updatedSheetData);
   };
 
   const handleAddNewRow = () => {
-    setNewRow(['', '', '', '', '', '', '']);
-    setIsEditing(true);
-    setIsAddingNew(true);
+    const newRow = ['Select', '', 'Select', 'Select', 'Select', '', ''];
+    setSheetData([...sheetData, newRow]);
   };
 
   const handleSubmit = async () => {
-    const CLIENT_ID = '482753064087-45cao68n6ucmd3757s0tesp9b34qqlf3.apps.googleusercontent.com';
-    const API_KEY = 'AIzaSyBuYJnQGPUbW9OrzBeX2AZKuFPfRTwAf_o';
-    const SPREADSHEET_ID = '1svIQ0U9n8eUnkh4Sxxz4X3c9N8WcmaeSXAUYOhsz31Q';
-    const RANGE = 'Sheet1!A1';
-
-    const DISCOVERY_DOCS = ["https://sheets.googleapis.com/$discovery/rest?version=v4"];
-    const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
-
-    function gapiInit() {
-      return new Promise((resolve, reject) => {
-        gapi.load('client:auth2', () => {
-          gapi.client.init({
-            apiKey: API_KEY,
-            clientId: CLIENT_ID,
-            discoveryDocs: DISCOVERY_DOCS,
-            scope: SCOPES,
-          }).then(() => {
-            resolve();
-          }, error => {
-            reject(error);
-          });
-        });
-      });
-    }
-
-    function updateSheet() {
-      return gapi.client.sheets.spreadsheets.values.update({
-        spreadsheetId: SPREADSHEET_ID,
-        range: RANGE,
-        valueInputOption: 'RAW',
-        resource: {
-          values: sheetData,
-        },
-      });
-    }
-
-    try {
-      await gapiInit();
-      await gapi.auth2.getAuthInstance().signIn();
-      await updateSheet();
-      alert('Sheet updated successfully!');
-    } catch (error) {
-      console.error('Error updating sheet', error);
-    }
+    // Your Google Sheets API integration code goes here
+    console.log('Submitting data:', sheetData);
+    // Example: Send sheetData to Google Sheets API
   };
 
   return (
@@ -141,76 +72,91 @@ const Home = () => {
             <th style={{ border: '1px solid black', padding: '8px' }}>Status of Progress</th>
             <th style={{ border: '1px solid black', padding: '8px' }}>Notes</th>
             <th style={{ border: '1px solid black', padding: '8px', cursor: 'pointer', textAlign: 'center', margin: '10px', fontSize: '24px' }} onClick={handleAddNewRow}>
-              Actions &#43;
+              &#43;
             </th>
           </tr>
         </thead>
         <tbody>
           {sheetData.map((row, rowIndex) => (
             <tr key={rowIndex}>
-              {rowIndex === editingRowIndex ? (
-                <>
-                  {newRow.map((cell, cellIndex) => (
-                    <td key={cellIndex} style={{ border: '1px solid black', padding: '8px' }}>
-                      <input
-                        type="text"
+              {row.map((cell, cellIndex) => (
+                <td
+                  key={cellIndex}
+                  style={{ border: '1px solid black', padding: '8px', cursor: 'pointer' }}
+                  contentEditable={true}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleInputChange(rowIndex, cellIndex, e.target.innerText)}
+                >
+                   {cellIndex === 0 ? (
+                    <select
+                      value={cell}
+                      onChange={(e) => handleInputChange(rowIndex, cellIndex, e.target.value)}
+                      style={{ width: '100%', padding: '8px' }}
+                    >
+                      <option value="Select">Select</option>
+                      <option value="Option 1">Option 1</option>
+                      <option value="Option 2">Option 2</option>
+                      <option value="Option 3">Option 3</option>
+                    </select>
+                  ) : cellIndex === 2 ? (
+                    <select
+                      value={cell}
+                      onChange={(e) => handleInputChange(rowIndex, cellIndex, e.target.value)}
+                      style={{ width: '100%', padding: '8px' }}
+                    >
+                      <option value="Select">Select</option>
+                      <option value="Option A">Option A</option>
+                      <option value="Option B">Option B</option>
+                      <option value="Option C">Option C</option>
+                    </select>
+                  ) : cellIndex === 3 ? (
+                    <select
+                      value={cell}
+                      onChange={(e) => handleInputChange(rowIndex, cellIndex, e.target.value)}
+                      style={{ width: '100%', padding: '8px' }}
+                    >
+                      <option value="Select">Select</option>
+                      <option value="Start Date 1">Start Date 1</option>
+                      <option value="Start Date 2">Start Date 2</option>
+                      <option value="Start Date 3">Start Date 3</option>
+                    </select>
+                    ) : cellIndex === 4 ? (
+                      <select
                         value={cell}
-                        onChange={(e) => handleInputChange(cellIndex, e.target.value)}
-                        style={{ padding: '8px', boxSizing: 'border-box', width: '100%' }}
-                      />
-                    </td>
-                  ))}
-                  <td style={{ border: '1px solid black', padding: '8px' }}>
-                    <button onClick={handleSaveClick}>Save</button>
-                    <span
-                      onClick={() => handleDeleteClick(rowIndex)}
-                      style={{ cursor: 'pointer', marginLeft: '5px' }}
+                        onChange={(e) => handleInputChange(rowIndex, cellIndex, e.target.value)}
+                        style={{ width: '100%', padding: '8px' }}
+                      >
+                        <option value="Select">Select</option>
+                        <option value="Start Date 1">Start Date 1</option>
+                        <option value="Start Date 2">Start Date 2</option>
+                        <option value="Start Date 3">Start Date 3</option>
+                      </select>
+                  ) : cellIndex === 5 ? (
+                    <select
+                      value={cell}
+                      onChange={(e) => handleInputChange(rowIndex, cellIndex, e.target.value)}
+                      style={{ width: '100%', padding: '8px' }}
                     >
-                      &#10006;
-                    </span>
-                  </td>
-                </>
-              ) : (
-                <>
-                  {row.map((cell, cellIndex) => (
-                    <td key={cellIndex} style={{ border: '1px solid black', padding: '8px' }}>{cell}</td>
-                  ))}
-                  <td style={{ border: '1px solid black', padding: '8px' }}>
-                    <button onClick={() => handleEditClick(rowIndex)}>Edit</button>
-                    <span
-                      onClick={() => handleDeleteClick(rowIndex)}
-                      style={{ cursor: 'pointer', marginLeft: '5px' }}
-                    >
-                      &#10006;
-                    </span>
-                  </td>
-                </>
-              )}
-            </tr>
-          ))}
-          {isEditing && isAddingNew && (
-            <tr>
-              {newRow.map((cell, index) => (
-                <td key={index} style={{ border: '1px solid black', padding: '8px' }}>
-                  <input
-                    type="text"
-                    value={cell}
-                    onChange={(e) => handleInputChange(index, e.target.value)}
-                    style={{ padding: '8px', boxSizing: 'border-box', width: '100%' }}
-                  />
+                      <option value="Select">Select</option>
+                      <option value="End Date 1">End Date 1</option>
+                      <option value="End Date 2">End Date 2</option>
+                      <option value="End Date 3">End Date 3</option>
+                    </select>
+                  ) : (
+                    cell
+                  )}
                 </td>
               ))}
               <td style={{ border: '1px solid black', padding: '8px' }}>
-                <button onClick={handleSaveClick}>Save</button>
                 <span
-                  onClick={() => setIsEditing(false)}
+                  onClick={() => handleDeleteClick(rowIndex)}
                   style={{ cursor: 'pointer', marginLeft: '5px' }}
                 >
                   &#10006;
                 </span>
               </td>
             </tr>
-          )}
+          ))}
         </tbody>
       </table>
       <button onClick={handleSubmit} style={{ margin: '20px 0', padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}>
