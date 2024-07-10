@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { gapi } from 'gapi-script';
 
 const Home = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [sheetData, setSheetData] = useState([]);
+
+  const CLIENT_ID = '482753064087-45cao68n6ucmd3757s0tesp9b34qqlf3.apps.googleusercontent.com';
+  const API_KEY = 'AIzaSyBuYJnQGPUbW9OrzBeX2AZKuFPfRTwAf_o';
+  const SPREADSHEET_ID = '1svIQ0U9n8eUnkh4Sxxz4X3c9N8WcmaeSXAUYOhsz31Q';
+  const RANGE = 'Sheet1!A1';
+
+  const DISCOVERY_DOCS = ["https://sheets.googleapis.com/$discovery/rest?version=v4"];
+  const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -16,13 +27,6 @@ const Home = () => {
       navigate('/login');
     } else {
       setUser(storedUser);
-      // fetchDataFromGoogleSheet();
-      // For demonstration, initializing with some sample data
-      //setSheetData([
-       // ['Option 1', 'Task A', 'Option A', 'Start Date 1', 'End Date 1', 'In Progress', 'Note A'],
-        //['Option 2', 'Task B', 'Option B', 'Start Date 2', 'End Date 2', 'Completed', 'Note B'],
-        //['Option 3', 'Task C', 'Option C', 'Start Date 3', 'End Date 3', 'Pending', 'Note C'],
-      //]);
     }
   }, [navigate]);
 
@@ -37,31 +41,54 @@ const Home = () => {
     setSheetData(updatedSheetData);
   };
 
-  const handleInputChange = (rowIndex, cellIndex, value) => {
-    const updatedSheetData = sheetData.map((row, index) => {
-      if (index === rowIndex) {
-        return row.map((cell, idx) => (idx === cellIndex ? value : cell));
-      }
-      return row;
-    });
-    setSheetData(updatedSheetData);
-  };
-
   const handleAddNewRow = () => {
-    const newRow = ['Select', '', 'Select', 'Select', 'Select', '', ''];
+    const newRow = ['Select', '', null, null, null, 'Select', ''];
     setSheetData([...sheetData, newRow]);
   };
 
+  const gapiInit = () => {
+    return new Promise((resolve, reject) => {
+      gapi.load('client:auth2', () => {
+        gapi.client.init({
+          apiKey: API_KEY,
+          clientId: CLIENT_ID,
+          discoveryDocs: DISCOVERY_DOCS,
+          scope: SCOPES,
+        }).then(() => {
+          resolve();
+        }, error => {
+          reject(error);
+        });
+      });
+    });
+  };
+
   const handleSubmit = async () => {
-    // Your Google Sheets API integration code goes here
-    console.log('Submitting data:', sheetData);
-    // Example: Send sheetData to Google Sheets API
+    try {
+      await gapiInit();
+      if (!gapi.auth2.getAuthInstance().isSignedIn.get()) {
+        await gapi.auth2.getAuthInstance().signIn();
+      }
+
+      const response = await gapi.client.sheets.spreadsheets.values.append({
+        spreadsheetId: SPREADSHEET_ID,
+        range: RANGE,
+        valueInputOption: 'RAW',
+        resource: {
+          values: sheetData,
+        },
+      });
+
+      console.log(response);
+    } catch (error) {
+      console.error('Error submitting data:', error);
+    }
   };
 
   return (
     <div className="home-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
       {user && <h2>Welcome, {user.email}</h2>}
-      <table style={{ margin: '20px 0', width: '100%', maxWidth: '600px', borderCollapse: 'collapse', textAlign: 'left' }}>
+      <table style={{ margin: '20px 0', borderCollapse: 'collapse', textAlign: 'left' }}>
         <thead>
           <tr>
             <th style={{ border: '1px solid black', padding: '8px' }}>Task Engagement level</th>
@@ -83,64 +110,54 @@ const Home = () => {
                 <td
                   key={cellIndex}
                   style={{ border: '1px solid black', padding: '8px', cursor: 'pointer' }}
-                  contentEditable={true}
+                  contentEditable={cellIndex !== 2 && cellIndex !== 3 && cellIndex !== 4}
                   suppressContentEditableWarning
-                  onBlur={(e) => handleInputChange(rowIndex, cellIndex, e.target.innerText)}
                 >
-                   {cellIndex === 0 ? (
+                  {cellIndex === 0 ? (
                     <select
                       value={cell}
-                      onChange={(e) => handleInputChange(rowIndex, cellIndex, e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const updatedSheetData = sheetData.map((row, idx) => (
+                          idx === rowIndex ? [value, ...row.slice(1)] : row
+                        ));
+                        setSheetData(updatedSheetData);
+                      }}
                       style={{ width: '100%', padding: '8px' }}
                     >
                       <option value="Select">Select</option>
-                      <option value="Option 1">Option 1</option>
-                      <option value="Option 2">Option 2</option>
-                      <option value="Option 3">Option 3</option>
+                      <option value="Primary Owner">Primary Owner</option>
+                      <option value="Supporting Role">Supporting Role</option>
+                      <option value="Observer">Observer</option>
                     </select>
-                  ) : cellIndex === 2 ? (
-                    <select
-                      value={cell}
-                      onChange={(e) => handleInputChange(rowIndex, cellIndex, e.target.value)}
+                  ) : cellIndex === 2 || cellIndex === 3 || cellIndex === 4 ? (
+                    <DatePicker
+                      selected={cell ? new Date(cell) : null}
+                      onChange={(date) => {
+                        const updatedSheetData = sheetData.map((row, idx) => (
+                          idx === rowIndex ? [...row.slice(0, cellIndex), date, ...row.slice(cellIndex + 1)] : row
+                        ));
+                        setSheetData(updatedSheetData);
+                      }}
+                      dateFormat="MM/dd/yyyy"
                       style={{ width: '100%', padding: '8px' }}
-                    >
-                      <option value="Select">Select</option>
-                      <option value="Option A">Option A</option>
-                      <option value="Option B">Option B</option>
-                      <option value="Option C">Option C</option>
-                    </select>
-                  ) : cellIndex === 3 ? (
-                    <select
-                      value={cell}
-                      onChange={(e) => handleInputChange(rowIndex, cellIndex, e.target.value)}
-                      style={{ width: '100%', padding: '8px' }}
-                    >
-                      <option value="Select">Select</option>
-                      <option value="Start Date 1">Start Date 1</option>
-                      <option value="Start Date 2">Start Date 2</option>
-                      <option value="Start Date 3">Start Date 3</option>
-                    </select>
-                    ) : cellIndex === 4 ? (
-                      <select
-                        value={cell}
-                        onChange={(e) => handleInputChange(rowIndex, cellIndex, e.target.value)}
-                        style={{ width: '100%', padding: '8px' }}
-                      >
-                        <option value="Select">Select</option>
-                        <option value="Start Date 1">Start Date 1</option>
-                        <option value="Start Date 2">Start Date 2</option>
-                        <option value="Start Date 3">Start Date 3</option>
-                      </select>
+                    />
                   ) : cellIndex === 5 ? (
                     <select
                       value={cell}
-                      onChange={(e) => handleInputChange(rowIndex, cellIndex, e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const updatedSheetData = sheetData.map((row, idx) => (
+                          idx === rowIndex ? [...row.slice(0, cellIndex), value, ...row.slice(cellIndex + 1)] : row
+                        ));
+                        setSheetData(updatedSheetData);
+                      }}
                       style={{ width: '100%', padding: '8px' }}
                     >
                       <option value="Select">Select</option>
-                      <option value="End Date 1">End Date 1</option>
-                      <option value="End Date 2">End Date 2</option>
-                      <option value="End Date 3">End Date 3</option>
+                      <option value="On the Path">On the Path</option>
+                      <option value="Pausing for Potential">Pausing for Potential</option>
+                      <option value="Victory Achieved">Victory Achieved</option>
                     </select>
                   ) : (
                     cell
