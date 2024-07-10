@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { gapi } from 'gapi-script';
 
 const Home = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [sheetData, setSheetData] = useState([]);
-  const [newRow, setNewRow] = useState(['', '']); // State to manage form input
+  const [newRow, setNewRow] = useState(['', '', '', '', '', '', '']);
+  const [editingRowIndex, setEditingRowIndex] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isAddingNew, setIsAddingNew] = useState(false);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -14,13 +17,22 @@ const Home = () => {
     const currentTime = Date.now();
     const tenMinutes = 10 * 60 * 1000;
 
-    if (!storedUser || (currentTime - loginTime > tenMinutes)) {
+    if (!storedUser || currentTime - loginTime > tenMinutes) {
       navigate('/login');
     } else {
       setUser(storedUser);
-      fetchDataFromGoogleSheet(); // Call function to fetch data
+     // fetchDataFromGoogleSheet();
     }
   }, [navigate]);
+
+  //const fetchDataFromGoogleSheet = () => {
+    // Simulated data fetching
+    //const mockData = [
+     // ['Task 1', 'Details 1', '2024-07-10', '2024-07-15', '2024-07-10', 'In Progress', 'Some notes'],
+     // ['Task 2', 'Details 2', '2024-07-12', '2024-07-18', '2024-07-12', 'Completed', 'Notes here'],
+   // ];
+   // setSheetData(mockData);
+  //};
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -28,110 +40,185 @@ const Home = () => {
     navigate('/login');
   };
 
-  const fetchDataFromGoogleSheet = async () => {
-    try {
-      const spreadsheetId = '1nbifmC4-hynJ2Lz0qXAUfhey6nXOGH_HT9SgVOU0bQE'; 
-      const range = 'Sheet1!A1:I20'; 
-      const apiKey = 'AIzaSyBuYJnQGPUbW9OrzBeX2AZKuFPfRTwAf_o'; // Replace with your actual API key
-
-      const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`;
-      const response = await axios.get(apiUrl);
-      const sheetValues = response.data.values;
-      setSheetData(sheetValues);
-    } catch (error) {
-      console.error('Error fetching data from Google Sheets:', error);
-    }
+  const handleEditClick = (rowIndex) => {
+    setEditingRowIndex(rowIndex);
+    setNewRow([...sheetData[rowIndex]]);
+    setIsEditing(true);
   };
 
-  const handleInputChange = (index, event) => {
+  const handleSaveClick = () => {
+    const updatedSheetData = [...sheetData];
+    if (editingRowIndex !== null) {
+      updatedSheetData[editingRowIndex] = [...newRow];
+    } else {
+      updatedSheetData.push([...newRow]);
+    }
+    setSheetData(updatedSheetData);
+    setNewRow(['', '', '', '', '', '', '']);
+    setEditingRowIndex(null);
+    setIsEditing(false);
+    setIsAddingNew(false);
+  };
+
+  const handleDeleteClick = (rowIndex) => {
+    const updatedSheetData = sheetData.filter((_, index) => index !== rowIndex);
+    setSheetData(updatedSheetData);
+    setNewRow(['', '', '', '', '', '', '']);
+    setEditingRowIndex(null);
+    setIsEditing(false);
+  };
+
+  const handleInputChange = (index, value) => {
     const updatedRow = [...newRow];
-    updatedRow[index] = event.target.value;
+    updatedRow[index] = value;
     setNewRow(updatedRow);
   };
 
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
+  const handleAddNewRow = () => {
+    setNewRow(['', '', '', '', '', '', '']);
+    setIsEditing(true);
+    setIsAddingNew(true);
+  };
+
+  const handleSubmit = async () => {
+    const CLIENT_ID = '482753064087-45cao68n6ucmd3757s0tesp9b34qqlf3.apps.googleusercontent.com';
+    const API_KEY = 'AIzaSyBuYJnQGPUbW9OrzBeX2AZKuFPfRTwAf_o';
+    const SPREADSHEET_ID = '1svIQ0U9n8eUnkh4Sxxz4X3c9N8WcmaeSXAUYOhsz31Q';
+    const RANGE = 'Sheet1!A1';
+
+    const DISCOVERY_DOCS = ["https://sheets.googleapis.com/$discovery/rest?version=v4"];
+    const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
+
+    function gapiInit() {
+      return new Promise((resolve, reject) => {
+        gapi.load('client:auth2', () => {
+          gapi.client.init({
+            apiKey: API_KEY,
+            clientId: CLIENT_ID,
+            discoveryDocs: DISCOVERY_DOCS,
+            scope: SCOPES,
+          }).then(() => {
+            resolve();
+          }, error => {
+            reject(error);
+          });
+        });
+      });
+    }
+
+    function updateSheet() {
+      return gapi.client.sheets.spreadsheets.values.update({
+        spreadsheetId: SPREADSHEET_ID,
+        range: RANGE,
+        valueInputOption: 'RAW',
+        resource: {
+          values: sheetData,
+        },
+      });
+    }
+
     try {
-      const spreadsheetId = '1nbifmC4-hynJ2Lz0qXAUfhey6nXOGH_HT9SgVOU0bQE'; 
-      const range = 'Sheet1!A1:B1'; // Example range to append data
-      const apiKey = 'AIzaSyBuYJnQGPUbW9OrzBeX2AZKuFPfRTwAf_o'; // Replace with your actual API key
-      const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=USER_ENTERED&key=${apiKey}`;
-  
-      const values = {
-        range: range,
-        majorDimension: 'ROWS',
-        values: [newRow]
-      };
-  console.log("value");
-  console.log(values)
-      // Make POST request to Google Sheets API
-      const response = await axios.post(apiUrl, values);
-      
-      console.log("response")
-      console.log(response);
-      console.log('Update successful', response.data);
-      setNewRow(['', '']); // Clear form inputs after successful submission
-      fetchDataFromGoogleSheet(); // Fetch updated data after submission
+      await gapiInit();
+      await gapi.auth2.getAuthInstance().signIn();
+      await updateSheet();
+      alert('Sheet updated successfully!');
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error('Unauthorized - check authentication credentials');
-      } else if (error.response && error.response.status === 400) {
-        console.error('Bad request - verify request parameters');
-      } else {
-        console.error('Error updating Google Sheets:', error.message);
-      }
+      console.error('Error updating sheet', error);
     }
   };
-  
+
   return (
     <div className="home-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-      <h2 style={{ textAlign: 'center' }}>Welcome {user ? user.email : ''} to the Home Page</h2>
-      <div className="sheet-data-container" style={{ width: '80%', overflowX: 'auto' }}>
-        <h2 style={{ textAlign: 'center' }}>Google Sheet Data:</h2>
-        <table style={{ margin: '0 auto', borderCollapse: 'collapse', width: '100%' }}>
-          <thead>
-            <tr>
-              {sheetData[0]?.map((header, index) => (
-                <th key={index} style={{ border: '1px solid black', padding: '8px' }}>{header}</th>
-              ))}
+      {user && <h2>Welcome, {user.email}</h2>}
+      <table style={{ margin: '20px 0', width: '100%', maxWidth: '600px', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <thead>
+          <tr>
+            <th style={{ border: '1px solid black', padding: '8px' }}>Task Engagement level</th>
+            <th style={{ border: '1px solid black', padding: '8px' }}>Empowering Task Details</th>
+            <th style={{ border: '1px solid black', padding: '8px' }}>Anticipated Start Date</th>
+            <th style={{ border: '1px solid black', padding: '8px' }}>Complete By Date</th>
+            <th style={{ border: '1px solid black', padding: '8px' }}>Actual Start Date</th>
+            <th style={{ border: '1px solid black', padding: '8px' }}>Status of Progress</th>
+            <th style={{ border: '1px solid black', padding: '8px' }}>Notes</th>
+            <th style={{ border: '1px solid black', padding: '8px', cursor: 'pointer', textAlign: 'center', margin: '10px', fontSize: '24px' }} onClick={handleAddNewRow}>
+              Actions &#43;
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {sheetData.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {rowIndex === editingRowIndex ? (
+                <>
+                  {newRow.map((cell, cellIndex) => (
+                    <td key={cellIndex} style={{ border: '1px solid black', padding: '8px' }}>
+                      <input
+                        type="text"
+                        value={cell}
+                        onChange={(e) => handleInputChange(cellIndex, e.target.value)}
+                        style={{ padding: '8px', boxSizing: 'border-box', width: '100%' }}
+                      />
+                    </td>
+                  ))}
+                  <td style={{ border: '1px solid black', padding: '8px' }}>
+                    <button onClick={handleSaveClick}>Save</button>
+                    <span
+                      onClick={() => handleDeleteClick(rowIndex)}
+                      style={{ cursor: 'pointer', marginLeft: '5px' }}
+                    >
+                      &#10006;
+                    </span>
+                  </td>
+                </>
+              ) : (
+                <>
+                  {row.map((cell, cellIndex) => (
+                    <td key={cellIndex} style={{ border: '1px solid black', padding: '8px' }}>{cell}</td>
+                  ))}
+                  <td style={{ border: '1px solid black', padding: '8px' }}>
+                    <button onClick={() => handleEditClick(rowIndex)}>Edit</button>
+                    <span
+                      onClick={() => handleDeleteClick(rowIndex)}
+                      style={{ cursor: 'pointer', marginLeft: '5px' }}
+                    >
+                      &#10006;
+                    </span>
+                  </td>
+                </>
+              )}
             </tr>
-          </thead>
-          <tbody>
-            {sheetData.slice(1).map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {row.map((cell, cellIndex) => (
-                  <td key={cellIndex} style={{ border: '1px solid black', padding: '8px' }}>{cell}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <br/>
-        <form onSubmit={handleFormSubmit} style={{ margin: '20px 0', textAlign: 'center' }}>
-  <h3 style={{ marginBottom: '20px' }}>Enter New Data</h3>
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-    {sheetData[0]?.map((header, index) => (
-      <div key={index} style={{ marginBottom: '10px', width: '80%', maxWidth: '400px' }}>
-        <label style={{ display: 'block', marginBottom: '5px' }}>{header}:</label>
-        <input
-          type="text"
-          value={newRow[index] || ''}
-          onChange={(e) => handleInputChange(index, e)}
-          style={{ padding: '8px', width: '100%', boxSizing: 'border-box' }}
-        />
-      </div>
-    ))}
-    <button type="submit" style={{ margin: '20px 0', padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}>
-      Submit
-    </button>
-  </div>
-</form>
-
-        <br/>
-        <button onClick={handleLogout} className="logout-button" style={{ backgroundColor: '#4CAF50' }}>
-          Logout
-        </button>
-      </div>
+          ))}
+          {isEditing && isAddingNew && (
+            <tr>
+              {newRow.map((cell, index) => (
+                <td key={index} style={{ border: '1px solid black', padding: '8px' }}>
+                  <input
+                    type="text"
+                    value={cell}
+                    onChange={(e) => handleInputChange(index, e.target.value)}
+                    style={{ padding: '8px', boxSizing: 'border-box', width: '100%' }}
+                  />
+                </td>
+              ))}
+              <td style={{ border: '1px solid black', padding: '8px' }}>
+                <button onClick={handleSaveClick}>Save</button>
+                <span
+                  onClick={() => setIsEditing(false)}
+                  style={{ cursor: 'pointer', marginLeft: '5px' }}
+                >
+                  &#10006;
+                </span>
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      <button onClick={handleSubmit} style={{ margin: '20px 0', padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}>
+        Submit
+      </button>
+      <button onClick={handleLogout} className="logout-button" style={{ margin: '20px 0', padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}>
+        Logout
+      </button>
     </div>
   );
 };
