@@ -41,6 +41,14 @@ const Home = () => {
     setSheetData(updatedSheetData);
   };
 
+  const handleInputChange = (event, rowIndex, cellIndex) => {
+    const value = event.target.value;
+    const updatedSheetData = sheetData.map((row, idx) => (
+      idx === rowIndex ? [...row.slice(0, cellIndex), value, ...row.slice(cellIndex + 1)] : row
+    ));
+    setSheetData(updatedSheetData);
+  };
+
   const handleAddNewRow = () => {
     const newRow = ['Select', '', null, null, null, 'Select', ''];
     setSheetData([...sheetData, newRow]);
@@ -80,6 +88,7 @@ const Home = () => {
       });
 
       console.log(response);
+      alert('Sheet updated successfully!');
     } catch (error) {
       console.error('Error submitting data:', error);
     }
@@ -88,7 +97,7 @@ const Home = () => {
   return (
     <div className="home-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
       {user && <h2>Welcome, {user.email}</h2>}
-      <table style={{ margin: '20px 0', borderCollapse: 'collapse', textAlign: 'left' }}>
+      <table style={{ margin: '10px ', borderCollapse: 'collapse', textAlign: 'left' }}>
         <thead>
           <tr>
             <th style={{ border: '1px solid black', padding: '8px' }}>Task Engagement level</th>
@@ -130,6 +139,60 @@ const Home = () => {
                       <option value="Supporting Role">Supporting Role</option>
                       <option value="Observer">Observer</option>
                     </select>
+                     ) : cellIndex === 1 ? (
+                    <select
+                      value={cell}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const updatedSheetData = sheetData.map((row, idx) => (
+                          idx === rowIndex ? [...row.slice(0, cellIndex), value, ...row.slice(cellIndex + 1)] : row
+                        ));
+                        setSheetData(updatedSheetData);
+                      }}
+                      style={{ width: '100%', padding: '8px' }}
+                    >
+                      <option value="Select">Select</option>
+                      <option value="On the Path">Hourly Type-Slack update Checking</option>
+                      <option value="Pausing for Potential">Hourly Type - Mail Update Checking</option>
+                      <option value="Victory Achieved">Daily Type - Meeting Update Checking</option>
+                      <option value="Victory Achieved">Daily Type - jira Update Checking</option>
+                      <option value="Victory Achieved">Daily Type - plan for today</option>
+                      <option value="Victory Achieved">Daily Type - Task Update</option>
+                      <option value="On the Path">Daily Type - Task Update - JIRA Update</option>
+                      <option value="Pausing for Potential"> Daily Type - Task Update - Slack Update</option>
+                      <option value="Victory Achieved">Daily Type - Daily Time log in jira</option>
+                      <option value="Victory Achieved">Daily Type - Plan for Tomorrow</option>
+                      <option value="Victory Achieved">Weekly Type - Plan for the week</option>
+                      <option value="Victory Achieved">Bi-Weekly - Sprint Planning</option>
+                      <option value="On the Path">Bi-Weekly - Story Grooming & estimation</option>
+                      <option value="Pausing for Potential">Monthly type - Plan for the Month</option>
+                      <option value="Victory Achieved">Monthly type - Monthly Time log</option>
+                      <option value="Victory Achieved">Yearly Type</option>
+                      <option value="Victory Achieved">Meeting type - Preparation for Meeting</option>
+                      <option value="Victory Achieved">Meeting type - Draft&broadcast the outcome of the meeting</option>
+                       <option value="On the Path">Requirement Analysis</option>
+                      <option value="Pausing for Potential">Issue Analysis</option>
+                      <option value="Victory Achieved">Code Analysis</option>
+                      <option value="Victory Achieved">Implementation - story</option>
+                      <option value="Victory Achieved">Implementation - code test coverage </option>
+                      <option value="Victory Achieved">Implementation - code fix</option>
+                      <option value="On the Path">Testing - local -Unit testing</option>
+                      <option value="Pausing for Potential">Testing - local - Story testing</option>
+                      <option value="Victory Achieved">Testing -local - issue testing</option>
+                      <option value="Victory Achieved"> Testing QA/UAT -Story testing</option>
+                      <option value="Victory Achieved">Testiing QA/UAT - issue testing</option>
+                      <option value="Victory Achieved"> Code review -PR Creation </option>
+                      <option value="Victory Achieved">Code review -self review  </option>
+                       <option value="Victory Achieved">Code review -Peer review  </option>
+                       <option value="Victory Achieved"> Deployment -test (QA/UAT/RA) </option>
+                       <option value="Victory Achieved">Deployment -Production deployment  </option>
+                      <option value="Victory Achieved"> Sprint pre-planning meeting </option>
+                       <option value="Victory Achieved"> Sprint Planning Meeting </option>
+                       <option value="Victory Achieved"> Sprint internal grooming & estimation meeting </option>
+                       <option value="Victory Achieved"> Sprint grooming & estimation meeting </option>
+                      <option value="Victory Achieved"> Sprint daily StandUp meeting </option>
+                       <option value="Victory Achieved"> Sprint Retro meeting </option>
+                    </select>
                   ) : cellIndex === 2 || cellIndex === 3 || cellIndex === 4 ? (
                     <DatePicker
                       selected={cell ? new Date(cell) : null}
@@ -159,6 +222,13 @@ const Home = () => {
                       <option value="Pausing for Potential">Pausing for Potential</option>
                       <option value="Victory Achieved">Victory Achieved</option>
                     </select>
+                  ):cellIndex === 6 ?(
+                    <input
+                    type="text"
+                    value={cell}
+                    onChange={(event) => handleInputChange(event, rowIndex, cellIndex)}
+                    style={{ width: '100%', padding: '1px' }}
+                  />
                   ) : (
                     cell
                   )}
