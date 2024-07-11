@@ -4,7 +4,9 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { gapi } from 'gapi-script';
 
+
 const Home = () => {
+
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [sheetData, setSheetData] = useState([]);
@@ -96,10 +98,15 @@ const Home = () => {
       console.error('Error submitting data:', error);
     }
   };
+  const handlePreviewClick = () => {
+   // const navigate=useNavigate();
+    navigate('/preview');
+  };
 
   return (
-    <div className="home-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-      {user && <h2>Welcome, {user.email}</h2>}
+    <div className="home-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '40vh' }}>
+      {user && <h2>Welcome, {user.email} at Daily status Page</h2>}
+      <button onClick={handleLogout} style={{ position: 'absolute', right: '10px', top: '10px' }}>Logout</button>
       <table style={{ margin: '10px ', borderCollapse: 'collapse', textAlign: 'left' }}>
         <thead>
           <tr>
@@ -246,7 +253,7 @@ const Home = () => {
         </tbody>
       </table>
       <button onClick={handleSubmit} style={{ padding: '10px 20px', fontSize: '16px', marginTop: '10px' }}>Submit Data</button>
-      <button onClick={handleLogout} style={{ padding: '10px 20px', fontSize: '16px', marginTop: '10px' }}>Logout</button>
+      <button onClick={handlePreviewClick} style={{ padding: '10px 20px', fontSize: '16px', marginTop: '10px' }}>Preview</button>
     </div>
   );
 };
