@@ -50,7 +50,7 @@ const Home = () => {
   };
 
   const handleAddNewRow = () => {
-    const newRow = ['Select', '', null, null, null, 'Select', ''];
+    const newRow = ['Select', '', '', '', '', 'Select', ''];
     setSheetData([...sheetData, newRow]);
   };
 
@@ -78,12 +78,15 @@ const Home = () => {
         await gapi.auth2.getAuthInstance().signIn();
       }
 
+      const dateTime = new Date().toLocaleString();
+      const updatedSheetData = sheetData.map(row => [...row, dateTime]);
+
       const response = await gapi.client.sheets.spreadsheets.values.append({
         spreadsheetId: SPREADSHEET_ID,
         range: RANGE,
         valueInputOption: 'RAW',
         resource: {
-          values: sheetData,
+          values: updatedSheetData,
         },
       });
 
@@ -139,7 +142,7 @@ const Home = () => {
                       <option value="Supporting Role">Supporting Role</option>
                       <option value="Observer">Observer</option>
                     </select>
-                     ) : cellIndex === 1 ? (
+                  ) : cellIndex === 1 ? (
                     <select
                       value={cell}
                       onChange={(e) => {
@@ -193,18 +196,6 @@ const Home = () => {
                       <option value="Victory Achieved"> Sprint daily StandUp meeting </option>
                        <option value="Victory Achieved"> Sprint Retro meeting </option>
                     </select>
-                  ) : cellIndex === 2 || cellIndex === 3 || cellIndex === 4 ? (
-                    <DatePicker
-                      selected={cell ? new Date(cell) : null}
-                      onChange={(date) => {
-                        const updatedSheetData = sheetData.map((row, idx) => (
-                          idx === rowIndex ? [...row.slice(0, cellIndex), date, ...row.slice(cellIndex + 1)] : row
-                        ));
-                        setSheetData(updatedSheetData);
-                      }}
-                      dateFormat="MM/dd/yyyy"
-                      style={{ width: '100%', padding: '8px' }}
-                    />
                   ) : cellIndex === 5 ? (
                     <select
                       value={cell}
@@ -218,10 +209,23 @@ const Home = () => {
                       style={{ width: '100%', padding: '8px' }}
                     >
                       <option value="Select">Select</option>
-                      <option value="On the Path">On the Path</option>
-                      <option value="Pausing for Potential">Pausing for Potential</option>
-                      <option value="Victory Achieved">Victory Achieved</option>
+                      <option value="Pending">Pending</option>
+                      <option value="InProgress">InProgress</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Delayed">Delayed</option>
                     </select>
+                  ) : cellIndex === 2 || cellIndex === 3 || cellIndex === 4 ? (
+                    <DatePicker
+                      selected={cell ? new Date(cell) : null}
+                      onChange={(date) => {
+                        const updatedSheetData = sheetData.map((row, idx) => (
+                          idx === rowIndex ? [...row.slice(0, cellIndex), date, ...row.slice(cellIndex + 1)] : row
+                        ));
+                        setSheetData(updatedSheetData);
+                      }}
+                      dateFormat="MM/dd/yyyy"
+                      style={{ width: '100%', padding: '8px' }}
+                    />
                   ):cellIndex === 6 ?(
                     <input
                     type="text"
@@ -234,24 +238,15 @@ const Home = () => {
                   )}
                 </td>
               ))}
-              <td style={{ border: '1px solid black', padding: '8px' }}>
-                <span
-                  onClick={() => handleDeleteClick(rowIndex)}
-                  style={{ cursor: 'pointer', marginLeft: '5px' }}
-                >
-                  &#10006;
-                </span>
+              <td style={{ border: '1px solid black', padding: '8px', cursor: 'pointer', textAlign: 'center' }} onClick={() => handleDeleteClick(rowIndex)}>
+                &#x2716;
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <button onClick={handleSubmit} style={{ margin: '20px 0', padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}>
-        Submit
-      </button>
-      <button onClick={handleLogout} className="logout-button" style={{ margin: '20px 0', padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}>
-        Logout
-      </button>
+      <button onClick={handleSubmit} style={{ padding: '10px 20px', fontSize: '16px', marginTop: '10px' }}>Submit Data</button>
+      <button onClick={handleLogout} style={{ padding: '10px 20px', fontSize: '16px', marginTop: '10px' }}>Logout</button>
     </div>
   );
 };
