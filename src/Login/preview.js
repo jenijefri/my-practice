@@ -66,7 +66,7 @@ const PreviewPage = () => {
     <div>
       <h1>Preview Page</h1>
       <button onClick={handleLogout} style={{ position: 'absolute', right: '10px', top: '10px' }}>Logout</button>
-      <button onClick={() => navigate('/home')}>Go Back to Home</button>
+      <button onClick={() => navigate('/dashboard')}>Go Back to Home</button>
       <table style={{ borderCollapse: 'collapse', width: '100%', margin: '40px' }}>
         <thead>
           <tr>
@@ -96,6 +96,7 @@ const PreviewPage = () => {
           ))}
         </tbody>
       </table>
+      
     </div>
   );
 };

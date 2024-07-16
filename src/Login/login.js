@@ -23,7 +23,7 @@ const Login = () => {
     
 
     if (storedUser && (currentTime - loginTime <= tenMinutes)) {
-      navigate('/taskview');
+      navigate('/Home');
     }
   }, [navigate]);
 
@@ -65,7 +65,7 @@ const Login = () => {
 
       console.log("Stored User JSON:", JSON.stringify(data.user));
       console.log("Stored Login Time:", localStorage.getItem('loginTime'));
-      navigate('/taskview');
+      navigate('/Home');
     } catch (error) {
       console.error('Unexpected error:', error.message);
       setError('Unexpected error: ' + error.message);

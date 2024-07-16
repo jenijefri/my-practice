@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Home = () => {
+const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
@@ -22,14 +22,17 @@ const Home = () => {
 
   return (
     <div>
-      <h2>Task View</h2>
+      <h2>DashBoard Page</h2>
       {user ? (
         <>
-          <p style={{textAlign:'center',fontSize:25}}>Welcome, {user.email}! Task View Page</p>
+          <p style={{textAlign:'center',fontSize:25}}>Welcome, {user.email}! DashBoard Page</p>
           <div>
           <div className="tab-container">
-      <button className="tab-button" onClick={() => navigate('/dashboard')}>DashBoard</button>
-      
+      <button className="tab-button" onClick={() => navigate('/Addtask')}>Add Task</button>     
+      <button className="tab-button" onClick={() => navigate('/taskview')}>Create Task</button>
+      <button className="tab-button" onClick={() => navigate('/task-list')}>Task List</button>
+      <button className="tab-button" onClick={() => navigate('/dailyStatus')}>Daily Status</button>
+      <button className="tab-button" onClick={() => navigate('/preview')}>Preview Task</button>
     </div>
           </div>
         </>
@@ -43,4 +46,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Dashboard;
