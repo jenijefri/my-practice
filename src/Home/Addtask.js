@@ -9,7 +9,7 @@ const AddTask = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/add-task', { task });
+      await axios.post('http://localhost:3000/add-task', { task }); // Update URL to match your server
       alert('Task added successfully');
       setTask('');
     } catch (error) {
@@ -26,22 +26,22 @@ const AddTask = () => {
 
   return (
     <div>
-    <h2>Add Task</h2>
-    <button onClick={() => navigate('/dashboard')}>Go Back to Home</button>
-    <button onClick={handleLogout} style={{ position: 'absolute', right: '10px', top: '10px' }}>Logout</button>
-    <div style={{ textAlign: 'center' }}>
-      <form onSubmit={handleSubmit} style={{ display: 'inline-block', textAlign: 'center' }}>
-        <input
-          type="text"
-          value={task}
-          onChange={(e) => setTask(e.target.value)}
-          placeholder="Enter task"
-          required
-          style={{ padding: '10px', margin: '10px', fontSize: '16px', width: '300px' }}
-        />
-        <button type="submit" style={{ padding: '10px 20px', fontSize: '16px' }}>Submit</button>
-      </form>
-    </div>
+      <h2>Add Task</h2>
+      <button onClick={() => navigate('/dashboard')}>Go Back to Home</button>
+      <button onClick={handleLogout} style={{ position: 'absolute', right: '10px', top: '10px' }}>Logout</button>
+      <div style={{ textAlign: 'center' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'inline-block', textAlign: 'center' }}>
+          <input
+            type="text"
+            value={task}
+            onChange={(e) => setTask(e.target.value)}
+            placeholder="Enter task"
+            required
+            style={{ padding: '10px', margin: '10px', fontSize: '16px', width: '300px' }}
+          />
+          <button type="submit" style={{ padding: '10px 20px', fontSize: '16px' }}>Submit</button>
+        </form>
+      </div>
     </div>
   );
 };

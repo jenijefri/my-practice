@@ -15,6 +15,7 @@ const TaskList = () => {
     localStorage.removeItem('loginTime');
     navigate('/login');
   };
+
   const handleDelete = (index) => {
     const updatedTasks = tasks.filter((_, i) => i !== index);
     setTasks(updatedTasks);
@@ -25,21 +26,34 @@ const TaskList = () => {
     <div>
       <h2>Task List</h2>
       <button onClick={() => navigate('/dashboard')}>Go Back to Home</button>
+      <br></br>
       <button onClick={handleLogout} style={{ position: 'absolute', right: '10px', top: '10px' }}>Logout</button>
-      <ul>
-        {tasks.map((task, index) => (
-          <li key={index}>
-            <div>Task Details: {task.taskDetail}</div>
-            <div>External Link: <a href={task.taskLink} target="_blank" rel="noopener noreferrer">{task.taskLink}</a></div>
-            <div>Start Date: {task.startDate}</div>
-            <div>Close Date: {task.closeDate}</div>
-            <div>
-              Status: <span style={{ backgroundColor: task.taskStatusColor, padding: '2px 4px', borderRadius: '4px', color: '#fff' }}>{task.taskStatus}</span>
-            </div>
-            <button onClick={() => handleDelete(index)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      <div>
+      <table style={{ width: '100%', border: '1px solid #ccc', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr>
+            <th style={{ border: '2px solid black', padding: '8px', textAlign: 'left' }}>Task Details</th>
+            <th style={{ border: '2px solid black', padding: '8px', textAlign: 'left' }}>External Link</th>
+            <th style={{ border: '2px solid black', padding: '8px', textAlign: 'left' }}>Start Date</th>
+            <th style={{ border: '2px solid black', padding: '8px', textAlign: 'left' }}>Close Date</th>
+            <th style={{ border: '2px solid black', padding: '8px', textAlign: 'left' }}>Status</th>
+            <th style={{ border: '2px solid black', padding: '8px', textAlign: 'left' }}>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tasks.map((task, index) => (
+            <tr key={index} style={{ border: '1px solid #ccc' }}>
+              <td style={{ border: '2px solid black', padding: '8px' }}>{task.taskDetail}</td>
+              <td style={{ border:'2px solid black', padding: '8px' }}><a href={task.taskLink} target="_blank" rel="noopener noreferrer">{task.taskLink}</a></td>
+              <td style={{ border: '2px solid black', padding: '8px' }}>{task.startDate}</td>
+              <td style={{ border: '2px solid black', padding: '8px' }}>{task.closeDate}</td>
+              <td style={{ border: '2px solid black', padding: '8px' }}><span style={{ backgroundColor: task.taskStatusColor, padding: '2px 4px', borderRadius: '4px', color: '#fff' }}>{task.taskStatus}</span></td>
+              <td style={{ border: '2px solid black', padding: '8px' }}><button onClick={() => handleDelete(index)}>Delete</button></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
     </div>
   );
 };

@@ -1,45 +1,24 @@
-// server.js
 const express = require('express');
 const bodyParser = require('body-parser');
-const { google } = require('googleapis');
 const cors = require('cors');
-require('dotenv').config();
-
 const app = express();
-const port = 5000;
 
-app.use(cors());
-app.use(bodyParser.json());
+app.use(cors()); // Enable CORS (for development purposes, restrict in production)
+app.use(bodyParser.json()); // Parse incoming JSON requests
 
-// Configure Google Sheets API
-const auth = new google.auth.GoogleAuth({
-  keyFile: 'path/to/your/credentials.json', // replace with your credentials file path
-  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+// POST endpoint to add a task
+app.post('/add-task', (req, res) => {
+  const task = req.body.task; // Assuming 'task' is passed in the request body
+
+  // Example: Save 'task' to a Google Sheet or database
+  // Your implementation logic here
+
+  // Example response
+  res.status(200).json({ message: 'Task added successfully' });
 });
 
-const sheets = google.sheets({ version: 'v4', auth });
-
-const SPREADSHEET_ID = '1nbifmC4-hynJ2Lz0qXAUfhey6nXOGH_HT9SgVOU0bQE'; // replace with your spreadsheet ID
-
-app.post('/add-task', async (req, res) => {
-  const { task } = req.body;
-
-  try {
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: SPREADSHEET_ID,
-      range: 'Sheet1!A1:A1', // adjust the range as needed
-      valueInputOption: 'RAW',
-      resource: {
-        values: [[task]],
-      },
-    });
-    res.status(200).send('Task added successfully');
-  } catch (error) {
-    console.error('Error adding task:', error);
-    res.status(500).send('Failed to add task');
-  }
-});
-
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+// Start server
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
