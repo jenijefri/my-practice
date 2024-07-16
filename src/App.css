@@ -1,0 +1,144 @@
+.tab-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  color:lightgreen;
+}
+
+.tab-button {
+  background-color:lightgreen;
+  border: 1px solid #ccc;
+  padding: 10px 20px;
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 5px 5px 0 0;
+  color:black;
+}
+
+.tab-button:hover {
+  background-color:lightseagreen;
+}
+
+.tab-button:focus {
+  outline: none;
+}
+
+/* taskview*/
+
+.task-view-container {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-form div {
+  margin-bottom: 15px;
+}
+
+.task-form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.task-form input {
+  padding: 8px;
+  width: 200px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.task-form button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.task-form button:hover {
+  background-color: #0056b3;
+}
+
+/*dropdown*/
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  min-width: 160px;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.dropdown-menu button {
+  width: 100%;
+  text-align: left;
+  padding: 10px 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+.dropdown-menu button:hover {
+  background-color: #ddd;
+}
+
+.custom-dropdown select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-size: 14px;
+  width: 200px; /* Adjust width as needed */
+}
+
+.custom-dropdown select option {
+  padding: 8px;
+}
+
+.custom-dropdown select option[value="Pending"] {
+  background-color: red;
+}
+
+.custom-dropdown select option[value="InProgress"] {
+  background-color: lightgreen;
+}
+
+.custom-dropdown select option[value="Completed"] {
+  background-color:Orange;
+}
+
+.custom-dropdown select option[value="Delayed"] {
+  background-color:lightblue;
+}
+
