@@ -23,7 +23,7 @@ const DailySatus = () => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     const loginTime = localStorage.getItem('loginTime');
     const currentTime = Date.now();
-    const tenMinutes = 30 * 60 * 1000;
+    const tenMinutes = 80 * 60 * 1000;
 
     if (!storedUser || currentTime - loginTime > tenMinutes) {
       navigate('/login');
