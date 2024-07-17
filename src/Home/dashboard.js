@@ -32,7 +32,7 @@ const Dashboard = () => {
       <button className="tab-button" onClick={() => navigate('/taskview')}>Create Task</button>
       <button className="tab-button" onClick={() => navigate('/task-list')}>Task List</button>
       <button className="tab-button" onClick={() => navigate('/dailyStatus')}>Daily Status</button>
-      <button className="tab-button" onClick={() => navigate('/preview')}>Preview Task</button>
+      <button className="tab-button" onClick={() => navigate('/preview')}>Edit task</button>
     </div>
           </div>
         </>

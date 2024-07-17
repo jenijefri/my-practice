@@ -38,7 +38,7 @@ const PreviewPage = () => {
             }, {});
           });
 
-          console.log('Mapped data:', data); // Log the mapped data
+          console.log('Mapped data:', data); 
           setSheetData(data);
         } else {
           console.log('No data found.');
@@ -51,10 +51,7 @@ const PreviewPage = () => {
     fetchDataFromSheet();
   }, [location.key]); // Fetch data when component mounts or when location key changes
 
-  const handleAddNewRow = () => {
-    const newRow = ['Select', '', '', '', '', 'Select', ''];
-    setSheetData([...sheetData, newRow]);
-  };
+ 
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('loginTime');
@@ -67,7 +64,7 @@ const PreviewPage = () => {
       <h1>Preview Page</h1>
       <button onClick={handleLogout} style={{ position: 'absolute', right: '10px', top: '10px' }}>Logout</button>
       <button onClick={() => navigate('/dashboard')}>Go Back to Home</button>
-      <table style={{ borderCollapse: 'collapse', width: '100%', margin: '40px' }}>
+      <table style={{ borderCollapse: 'collapse', width: '90%', margin: '40px' }}>
         <thead>
           <tr>
             <th style={{ border: '1px solid black', padding: '8px' }}>Task Engagement level</th>
@@ -77,9 +74,7 @@ const PreviewPage = () => {
             <th style={{ border: '1px solid black', padding: '8px' }}>Actual Start Date</th>
             <th style={{ border: '1px solid black', padding: '8px' }}>Status of Progress</th>
             <th style={{ border: '1px solid black', padding: '8px' }}>Notes</th>
-            <th style={{ border: '1px solid black', padding: '8px', cursor: 'pointer', textAlign: 'center', fontSize: '24px' }} onClick={handleAddNewRow}>
-              &#43;
-            </th>
+            
           </tr>
         </thead>
         <tbody>

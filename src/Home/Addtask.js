@@ -119,7 +119,7 @@ const AddTask = () => {
             <button onClick={handleLogout} style={{ position: 'absolute', right: '10px', top: '10px' }}>Logout</button>
             <button onClick={() => navigate('/dashboard')}>Go Back to Home</button>
             <br></br>
-            <div style={{ borderCollapse: 'collapse', width: '90%', margin: '40px' }}>
+            <div style={{ borderCollapse: 'collapse', width: '100%', margin: '40px' }}>
                 <h3>Task List</h3>
                 <table style={{ width: '90%', border: '1px solid black', borderCollapse: 'collapse' }}>
     <thead>
