@@ -18,7 +18,7 @@ const Login = () => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     const loginTime = localStorage.getItem('loginTime');
     const currentTime = Date.now();
-    const tenMinutes = 10 * 60 * 1000;
+    const tenMinutes = 30 * 60 * 1000;
 
     
 

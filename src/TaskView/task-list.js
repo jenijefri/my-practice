@@ -28,8 +28,8 @@ const TaskList = () => {
       <button onClick={() => navigate('/dashboard')}>Go Back to Home</button>
       <br></br>
       <button onClick={handleLogout} style={{ position: 'absolute', right: '10px', top: '10px' }}>Logout</button>
-      <div>
-      <table style={{ width: '100%', border: '1px solid #ccc', borderCollapse: 'collapse' }}>
+      <div >
+      <table style={{ borderCollapse: 'collapse', width: '90%', margin: '40px' }}>
         <thead>
           <tr>
             <th style={{ border: '2px solid black', padding: '8px', textAlign: 'left' }}>Task Details</th>
@@ -53,7 +53,7 @@ const TaskList = () => {
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
     </div>
   );
 };

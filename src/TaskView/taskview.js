@@ -13,7 +13,7 @@ const TaskView = () => {
   const [dropdownOptions, setDropdownOptions] = useState([]);
 
   const SPREADSHEET_ID = '1nbifmC4-hynJ2Lz0qXAUfhey6nXOGH_HT9SgVOU0bQE';
-  const RANGE = 'Sheet1!A1:A41'; // Adjust the range as per your sheet's structure
+  const RANGE = 'Sheet1!A:A'; // Adjust the range as per your sheet's structure
   const API_KEY = 'AIzaSyBuYJnQGPUbW9OrzBeX2AZKuFPfRTwAf_o';
 
   useEffect(() => {
