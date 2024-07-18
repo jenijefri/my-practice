@@ -102,6 +102,9 @@ const TaskView = () => {
       case 'Bug':
         color = 'purple';
         break;
+        case 'No Priority':
+        color = 'gray';
+        break;
       default:
         color = '';
         break;
@@ -182,10 +185,11 @@ const TaskView = () => {
             <option value="Medium Priority">Medium Priority</option>
             <option value="Low Priority">Low Priority</option>
             <option value="Bug">Bug</option>
+            <option value ="No Priority">No Priority</option>
           </select>
         </div>
         <div className="custom-dropdown">
-          <label>Assign Task Details:</label>
+          <label>Assign Member:</label>
           <select
             value={assignTask}
             onChange={handleAssignTaskChange}
@@ -196,6 +200,7 @@ const TaskView = () => {
             <option value="jeni">Jeni</option>
             <option value="jenijefri">JeniJefri</option>
             <option value="jefrinasujil">Jefrinasujil</option>
+            <option value="UnAssign Person">Un Assign Person</option>
           </select>
         </div>
         <button type="submit">Submit Task</button>

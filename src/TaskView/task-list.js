@@ -37,7 +37,7 @@ const TaskList = () => {
               <th style={{ border: '2px solid black', padding: '8px', textAlign: 'left' }}>Start Date</th>
               <th style={{ border: '2px solid black', padding: '8px', textAlign: 'left' }}>Close Date</th>
               <th style={{ border: '2px solid black', padding: '8px', textAlign: 'left' }}>Priority</th>
-              <th style={{ border: '2px solid black', padding: '8px', textAlign: 'left' }}>Assign Task Details</th>
+              <th style={{ border: '2px solid black', padding: '8px', textAlign: 'left' }}>Assign Member Details</th>
               <th style={{ border: '2px solid black', padding: '8px', textAlign: 'left' }}>Action</th>
             </tr>
           </thead>

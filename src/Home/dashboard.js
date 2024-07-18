@@ -28,11 +28,12 @@ const Dashboard = () => {
           <p style={{textAlign:'center',fontSize:25}}>Welcome, {user.email}! DashBoard Page</p>
           <div>
           <div className="tab-container">
-      <button className="tab-button" onClick={() => navigate('/Addtask')}>Add Task Type  List</button>     
+      <button className="tab-button" onClick={() => navigate('/Addtask')}>Add Task Type </button>     
       <button className="tab-button" onClick={() => navigate('/taskview')}>Create Task</button>
       <button className="tab-button" onClick={() => navigate('/task-list')}>Task List</button>
       <button className="tab-button" onClick={() => navigate('/dailyStatus')}>Daily Status</button>
       <button className="tab-button" onClick={() => navigate('/preview')}>Edit task</button>
+      <button className="tab-button" onClick={() => navigate('/userlist')}>User List</button>
     </div>
           </div>
         </>

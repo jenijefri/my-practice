@@ -27,7 +27,7 @@ const AddTask = () => {
         try {
             const response = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: SPREADSHEET_ID,
-                range: 'Sheet1!A:B', 
+                range: 'Sheet1!A:B', // Adjust the range as per your sheet
             });
 
             const tasks = response.result.values ? response.result.values.map((row, index) => ({ id: index, task: row[0], description: row[1] })) : [];
@@ -49,7 +49,6 @@ const AddTask = () => {
             console.log('Task deleted from Google Sheets');
         } catch (error) {
             console.error('Error deleting task from Google Sheets:', error);
-            
         }
     };
     
@@ -74,20 +73,15 @@ const AddTask = () => {
             });
         } catch (error) {
             console.error('Error deleting task from Google Sheets:', error);
-           
         }
     };
-    
+
     const handleTaskChange = (index, field, value) => {
         const updatedTasks = tasks.map((task, i) =>
             i === index ? { ...task, [field]: value } : task
         );
-        setTasks(updatedTasks); // Correctly update state
-    
-        // Update task in Google Sheets immediately on change
-        updateTaskInSheet(updatedTasks[index], index);
+        setTasks(updatedTasks);
     };
-    
 
     const updateTaskInSheet = async (task, index) => {
         try {
@@ -102,12 +96,11 @@ const AddTask = () => {
             console.log('Task updated in Google Sheets');
         } catch (error) {
             console.error('Error updating task in Google Sheets:', error);
-            // Handle error updating Google Sheets if needed
         }
     };
 
-    const handleTaskBlur = async (index) => {
-        await saveTasksToSheet(tasks);
+    const handleTaskBlur = (index) => {
+        updateTaskInSheet(tasks[index], index);
     };
 
     const saveTasksToSheet = async (tasks) => {
@@ -142,10 +135,22 @@ const AddTask = () => {
         await saveTasksToSheet(tasks);
     };
 
+    const handleKeyPress = (e, index) => {
+        if (e.key === 'Enter') {
+          expandRow(index);
+        }
+    };
+
+    const expandRow = (index) => {
+        const row = document.querySelectorAll('tr')[index + 1]; // +1 to account for the header row
+        if (row) {
+            row.style.height = 'auto'; // Expand row to fit content
+        }
+    };
 
     return (
         <div>
-            <h2>Add Task  Type List Page</h2>
+            <h2>Add Task Type List Page</h2>
             <button onClick={handleLogout} style={{ position: 'absolute', right: '10px', top: '10px' }}>Logout</button>
             <button onClick={() => navigate('/dashboard')}>Go Back to Home</button>
             <br />
@@ -168,19 +173,33 @@ const AddTask = () => {
                                             value={task.task}
                                             onChange={(e) => handleTaskChange(index, 'task', e.target.value)}
                                             onBlur={() => handleTaskBlur(index)}
-                                            style={{ width: '100%', marginRight: '10px' }}
+                                            onKeyPress={(e) => handleKeyPress(e, index)}
+                                            style={{  width: '100%',
+                                                border: 'none',
+                                                padding: 0,
+                                                fontSize: '14px', // Adjusted font size
+                                                boxSizing: 'border-box' }}
                                         />
                                     </div>
                                 </td>
                                 <td style={{ border: '1px solid black' }}>
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <input
+                                    <input
                                             type="text"
                                             value={task.description}
                                             onChange={(e) => handleTaskChange(index, 'description', e.target.value)}
                                             onBlur={() => handleTaskBlur(index)}
-                                            style={{ width: '100%', marginRight: '10px' }}
+                                            onKeyPress={(e) => handleKeyPress(e, index)}
+                                            style={{
+                                                width: '100%',
+                                                border: 'none',
+                                                padding: 0,
+                                                fontSize: '14px', // Adjusted font size
+                                                boxSizing: 'border-box',
+                                                // Add other optional styles here as needed
+                                            }}
                                         />
+
                                         <button onClick={() => handleDeleteTask(index)}>Delete</button>
                                         <button onClick={() => handleAddRow(index)}>+</button>
                                     </div>

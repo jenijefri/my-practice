@@ -15,10 +15,6 @@ import TaskContext from './TaskView/taskcontext';
 import AddTask from './Home/Addtask';
 
 
-
-
-
-
 const App = () => {
   return (
   
@@ -27,6 +23,7 @@ const App = () => {
         <Router>
           <Routes>
             <Route path="/" element={<Login />} />
+
             <Route path="Home"element={<Home/>}/>
             <Route path="Addtask"element={<AddTask/>}/>
             <Route path="dashboard"element={<Dashboard/>}/>
@@ -38,6 +35,7 @@ const App = () => {
             <Route path="dailyStatus" element={<DailySatus/>}/>
             <Route path="taskcontext" element={<TaskContext/>}/>
             
+           
            
            
           </Routes>
