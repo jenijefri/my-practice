@@ -10,10 +10,11 @@ const TaskView = () => {
   const [closeDate, setCloseDate] = useState('');
   const [taskStatus, setTaskStatus] = useState('');
   const [taskStatusColor, setTaskStatusColor] = useState('');
+  const [assignTask, setAssignTask] = useState('');
   const [dropdownOptions, setDropdownOptions] = useState([]);
 
   const SPREADSHEET_ID = '1nbifmC4-hynJ2Lz0qXAUfhey6nXOGH_HT9SgVOU0bQE';
-  const RANGE = 'Sheet1!A:A'; // Adjust the range as per your sheet's structure
+  const RANGE = 'Sheet1!A:A';
   const API_KEY = 'AIzaSyBuYJnQGPUbW9OrzBeX2AZKuFPfRTwAf_o';
 
   useEffect(() => {
@@ -52,7 +53,7 @@ const TaskView = () => {
         });
 
         const values = response.result.values;
-        console.log('Fetched values:', values); // Log the fetched values
+        console.log('Fetched values:', values);
 
         if (values) {
           const options = values.map(row => row[0]);
@@ -84,17 +85,34 @@ const TaskView = () => {
     setCloseDate(e.target.value);
   };
 
-  const statusColorMapping = {
-    Pending: 'red',
-    InProgress: 'lightgreen',
-    Completed: 'orange',
-    Delayed: 'lightblue',
+  const handleTaskStatusChange = (e) => {
+    const value = e.target.value;
+    let color = '';
+
+    switch (value) {
+      case 'High Priority':
+        color = 'red';
+        break;
+      case 'Medium Priority':
+        color = 'orange';
+        break;
+      case 'Low Priority':
+        color = 'green';
+        break;
+      case 'Bug':
+        color = 'purple';
+        break;
+      default:
+        color = '';
+        break;
+    }
+
+    setTaskStatus(value);
+    setTaskStatusColor(color);
   };
 
-  const handleOptionChange = (e) => {
-    const status = e.target.value;
-    setTaskStatus(status);
-    setTaskStatusColor(statusColorMapping[status] || '');
+  const handleAssignTaskChange = (e) => {
+    setAssignTask(e.target.value);
   };
 
   const handleFormSubmit = (e) => {
@@ -107,6 +125,7 @@ const TaskView = () => {
       closeDate,
       taskStatus,
       taskStatusColor,
+      assignTask
     };
 
     const existingTasks = JSON.parse(localStorage.getItem('tasks')) || [];
@@ -119,6 +138,7 @@ const TaskView = () => {
     setCloseDate('');
     setTaskStatus('');
     setTaskStatusColor('');
+    setAssignTask('');
 
     navigate('/task-list');
   };
@@ -150,18 +170,32 @@ const TaskView = () => {
           <input type="date" value={closeDate} onChange={handleCloseDateChange} required />
         </div>
         <div className="custom-dropdown">
-          <label>Status:</label>
+          <label>Priority:</label>
           <select
             value={taskStatus}
-            onChange={handleOptionChange}
+            onChange={handleTaskStatusChange}
             required
             style={{ backgroundColor: taskStatusColor }}
           >
             <option value="" disabled>Select Status</option>
-            <option value="Pending">Pending</option>
-            <option value="InProgress">InProgress</option>
-            <option value="Completed">Completed</option>
-            <option value="Delayed">Delayed</option>
+            <option value="High Priority">High Priority</option>
+            <option value="Medium Priority">Medium Priority</option>
+            <option value="Low Priority">Low Priority</option>
+            <option value="Bug">Bug</option>
+          </select>
+        </div>
+        <div className="custom-dropdown">
+          <label>Assign Task Details:</label>
+          <select
+            value={assignTask}
+            onChange={handleAssignTaskChange}
+            required
+          >
+            <option value="" disabled>Select Person</option>
+            <option value="jenitta">Jenitta</option>
+            <option value="jeni">Jeni</option>
+            <option value="jenijefri">JeniJefri</option>
+            <option value="jefrinasujil">Jefrinasujil</option>
           </select>
         </div>
         <button type="submit">Submit Task</button>

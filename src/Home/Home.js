@@ -22,10 +22,10 @@ const Home = () => {
 
   return (
     <div>
-      <h2>Task View</h2>
+      <h2>Task Dashboard</h2>
       {user ? (
         <>
-          <p style={{textAlign:'center',fontSize:25}}>Welcome, {user.email}! Task View Page</p>
+          <p style={{textAlign:'center',fontSize:25}}>Welcome, {user.email}! Task DashBoard</p>
           <div>
           <div className="tab-container">
       <button className="tab-button" onClick={() => navigate('/dashboard')}>DashBoard</button>

@@ -18,6 +18,7 @@ import AddTask from './Home/Addtask';
 
 
 
+
 const App = () => {
   return (
   
@@ -36,6 +37,7 @@ const App = () => {
             <Route path="task-list" element={<TaskList/>}/>
             <Route path="dailyStatus" element={<DailySatus/>}/>
             <Route path="taskcontext" element={<TaskContext/>}/>
+            
            
            
           </Routes>
