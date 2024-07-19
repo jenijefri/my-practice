@@ -13,6 +13,7 @@ import DailySatus from './Home/dailyStatus';
 import Dashboard from './Home/dashboard';
 import TaskContext from './TaskView/taskcontext';
 import AddTask from './Home/Addtask';
+import ProfileComponent from './Home/profileComponent';
 
 
 const App = () => {
@@ -34,6 +35,7 @@ const App = () => {
             <Route path="task-list" element={<TaskList/>}/>
             <Route path="dailyStatus" element={<DailySatus/>}/>
             <Route path="taskcontext" element={<TaskContext/>}/>
+            <Route path="profileComponent" element={<ProfileComponent/>}/>
             
            
            

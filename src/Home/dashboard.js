@@ -33,7 +33,7 @@ const Dashboard = () => {
       <button className="tab-button" onClick={() => navigate('/task-list')}>Task List</button>
       <button className="tab-button" onClick={() => navigate('/dailyStatus')}>Daily Status</button>
       <button className="tab-button" onClick={() => navigate('/preview')}>Edit task</button>
-      <button className="tab-button" onClick={() => navigate('/userlist')}>User List</button>
+      <button className="tab-button" onClick={() => navigate('/profileComponent')}>User Data List</button>
     </div>
           </div>
         </>

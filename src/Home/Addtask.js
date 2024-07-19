@@ -137,10 +137,9 @@ const AddTask = () => {
 
     const handleKeyPress = (e, index) => {
         if (e.key === 'Enter') {
-          expandRow(index);
+            expandRow(index);
         }
     };
-
     const expandRow = (index) => {
         const row = document.querySelectorAll('tr')[index + 1]; // +1 to account for the header row
         if (row) {
@@ -177,7 +176,7 @@ const AddTask = () => {
                                             style={{  width: '100%',
                                                 border: 'none',
                                                 padding: 0,
-                                                fontSize: '14px', // Adjusted font size
+                                                fontSize: '14px', 
                                                 boxSizing: 'border-box' }}
                                         />
                                     </div>
@@ -194,9 +193,9 @@ const AddTask = () => {
                                                 width: '100%',
                                                 border: 'none',
                                                 padding: 0,
-                                                fontSize: '14px', // Adjusted font size
+                                                fontSize: '14px', 
                                                 boxSizing: 'border-box',
-                                                // Add other optional styles here as needed
+                                               
                                             }}
                                         />
 
