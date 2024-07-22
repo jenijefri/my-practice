@@ -14,6 +14,7 @@ import Dashboard from './Home/dashboard';
 import TaskContext from './TaskView/taskcontext';
 import AddTask from './Home/Addtask';
 import ProfileComponent from './Home/profileComponent';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 
 const App = () => {
@@ -36,6 +37,7 @@ const App = () => {
             <Route path="dailyStatus" element={<DailySatus/>}/>
             <Route path="taskcontext" element={<TaskContext/>}/>
             <Route path="profileComponent" element={<ProfileComponent/>}/>
+            <Route path="supabaseClient" element={<SupabaseClient/>}/>
             
            
            
