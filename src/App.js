@@ -38,6 +38,7 @@ const App = () => {
             <Route path="taskcontext" element={<TaskContext/>}/>
             <Route path="profileComponent" element={<ProfileComponent/>}/>
             <Route path="supabaseClient" element={<SupabaseClient/>}/>
+            <Route path="adminApi" element={<addApi/>}/>
             
            
            
