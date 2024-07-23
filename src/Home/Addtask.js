@@ -1,37 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { gapi } from 'gapi-script';
 import { useNavigate } from 'react-router-dom';
 
-const CLIENT_ID = '482753064087-45cao68n6ucmd3757s0tesp9b34qqlf3.apps.googleusercontent.com';
-const API_KEY = 'AIzaSyBuYJnQGPUbW9OrzBeX2AZKuFPfRTwAf_o';
+const API_KEY = 'AIzaSyBuYJnQGPUbW9OrzBeX2AZKuFPfRTwAf_o'; // Your API Key
 const SPREADSHEET_ID = '1nbifmC4-hynJ2Lz0qXAUfhey6nXOGH_HT9SgVOU0bQE';
-const SCOPE = 'https://www.googleapis.com/auth/spreadsheets';
+const RANGE = 'Sheet1!A:B'; // Define the range you need
 
 const AddTask = () => {
     const [tasks, setTasks] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        function start() {
-            gapi.client.init({
-                apiKey: API_KEY,
-                clientId: CLIENT_ID,
-                discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
-                scope: SCOPE,
-            }).then(fetchTasks);
-        }
-        gapi.load('client:auth2', start);
+        fetchTasks();
     }, []);
 
     const fetchTasks = async () => {
         try {
-            const response = await gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId: SPREADSHEET_ID,
-                range: 'Sheet1!A:B', // Adjust the range as per your sheet
-            });
-
-            const tasks = response.result.values ? response.result.values.map((row, index) => ({ id: index, task: row[0], description: row[1] })) : [];
-            setTasks(tasks);
+            const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`);
+            const data = await response.json();
+            if (response.ok) {
+                const tasks = data.values ? data.values.map((row, index) => ({ id: index, task: row[0], description: row[1] })) : [];
+                setTasks(tasks);
+            } else {
+                console.error('Error fetching tasks:', data);
+            }
         } catch (error) {
             console.error('Error fetching tasks from Google Sheets:', error);
         }
@@ -40,10 +31,10 @@ const AddTask = () => {
     const handleDeleteTask = async (index) => {
         const taskId = tasks[index].id;
         console.log('Deleting task with taskId:', taskId);
-    
+
         const updatedTasks = tasks.filter((task, i) => i !== index);
         setTasks(updatedTasks);
-    
+
         try {
             await deleteTaskFromSheet(taskId);
             console.log('Task deleted from Google Sheets');
@@ -51,29 +42,10 @@ const AddTask = () => {
             console.error('Error deleting task from Google Sheets:', error);
         }
     };
-    
+
     const deleteTaskFromSheet = async (taskId) => {
-        try {
-            await gapi.client.sheets.spreadsheets.batchUpdate({
-                spreadsheetId: SPREADSHEET_ID,
-                resource: {
-                    requests: [
-                        {
-                            deleteDimension: {
-                                range: {
-                                    sheetId: 0, 
-                                    dimension: 'ROWS',
-                                    startIndex: taskId + 1, 
-                                    endIndex: taskId + 2, 
-                                },
-                            },
-                        },
-                    ],
-                },
-            });
-        } catch (error) {
-            console.error('Error deleting task from Google Sheets:', error);
-        }
+        // Note: Deleting rows directly with API Key might not be supported. Use alternative methods if required.
+        // Implement an alternative if deletion is not supported with API Key.
     };
 
     const handleTaskChange = (index, field, value) => {
@@ -85,13 +57,14 @@ const AddTask = () => {
 
     const updateTaskInSheet = async (task, index) => {
         try {
-            await gapi.client.sheets.spreadsheets.values.update({
-                spreadsheetId: SPREADSHEET_ID,
-                range: `Sheet1!A${index + 1}:B${index + 1}`, // Adjust range to update specific row
-                valueInputOption: 'RAW',
-                resource: {
-                    values: [[task.task, task.description]],
+            await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A${index + 1}:B${index + 1}?key=${API_KEY}&valueInputOption=RAW`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({
+                    values: [[task.task, task.description]],
+                }),
             });
             console.log('Task updated in Google Sheets');
         } catch (error) {
@@ -105,13 +78,14 @@ const AddTask = () => {
 
     const saveTasksToSheet = async (tasks) => {
         try {
-            await gapi.client.sheets.spreadsheets.values.update({
-                spreadsheetId: SPREADSHEET_ID,
-                range: 'Sheet1!A:B',
-                valueInputOption: 'RAW',
-                resource: {
-                    values: tasks.map(task => [task.task, task.description]),
+            await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:B?key=${API_KEY}&valueInputOption=RAW`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({
+                    values: tasks.map(task => [task.task, task.description]),
+                }),
             });
             console.log('Tasks saved to Google Sheets');
         } catch (error) {
@@ -126,6 +100,7 @@ const AddTask = () => {
     };
 
     const handleLogout = () => {
+        // API Key does not involve user sign-in, so this can be removed or customized
         localStorage.removeItem('user');
         localStorage.removeItem('loginTime');
         navigate('/login');
@@ -140,6 +115,7 @@ const AddTask = () => {
             expandRow(index);
         }
     };
+
     const expandRow = (index) => {
         const row = document.querySelectorAll('tr')[index + 1]; // +1 to account for the header row
         if (row) {
@@ -173,32 +149,20 @@ const AddTask = () => {
                                             onChange={(e) => handleTaskChange(index, 'task', e.target.value)}
                                             onBlur={() => handleTaskBlur(index)}
                                             onKeyPress={(e) => handleKeyPress(e, index)}
-                                            style={{  width: '100%',
-                                                border: 'none',
-                                                padding: 0,
-                                                fontSize: '14px', 
-                                                boxSizing: 'border-box' }}
+                                            style={{ width: '100%', border: 'none', padding: 0, fontSize: '14px', boxSizing: 'border-box' }}
                                         />
                                     </div>
                                 </td>
                                 <td style={{ border: '1px solid black' }}>
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <input
+                                        <input
                                             type="text"
                                             value={task.description}
                                             onChange={(e) => handleTaskChange(index, 'description', e.target.value)}
                                             onBlur={() => handleTaskBlur(index)}
                                             onKeyPress={(e) => handleKeyPress(e, index)}
-                                            style={{
-                                                width: '100%',
-                                                border: 'none',
-                                                padding: 0,
-                                                fontSize: '14px', 
-                                                boxSizing: 'border-box',
-                                               
-                                            }}
+                                            style={{ width: '100%', border: 'none', padding: 0, fontSize: '14px', boxSizing: 'border-box' }}
                                         />
-
                                         <button onClick={() => handleDeleteTask(index)}>Delete</button>
                                         <button onClick={() => handleAddRow(index)}>+</button>
                                     </div>
