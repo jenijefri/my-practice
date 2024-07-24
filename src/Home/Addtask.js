@@ -16,7 +16,7 @@ const AddTask = () => {
             console.log('Creating spreadsheet...');
             const createResponse = await gapi.client.sheets.spreadsheets.create({
                 properties: {
-                    title: 'Add Task Type',
+                    title: 'AddTaskType',
                 },
                 sheets: [{
                     properties: {
