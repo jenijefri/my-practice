@@ -13,7 +13,7 @@ const DailySatus = () => {
 
   const CLIENT_ID = '482753064087-45cao68n6ucmd3757s0tesp9b34qqlf3.apps.googleusercontent.com';
   const API_KEY = 'AIzaSyBuYJnQGPUbW9OrzBeX2AZKuFPfRTwAf_o';
-  const SPREADSHEET_ID = '1svIQ0U9n8eUnkh4Sxxz4X3c9N8WcmaeSXAUYOhsz31Q';
+  const SPREADSHEET_ID = '';
   const RANGE = 'Sheet1!A1';
 
   const DISCOVERY_DOCS = ["https://sheets.googleapis.com/$discovery/rest?version=v4"];

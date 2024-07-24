@@ -13,7 +13,7 @@ const TaskView = () => {
   const [assignTask, setAssignTask] = useState('');
   const [dropdownOptions, setDropdownOptions] = useState([]);
 
-  const SPREADSHEET_ID = '1nbifmC4-hynJ2Lz0qXAUfhey6nXOGH_HT9SgVOU0bQE';
+  const SPREADSHEET_ID = '1rrjGFPEaL_1wj42uOXXPG10e5l84OmTU-TTDTKBDcGk';
   const RANGE = 'Sheet1!A:A';
   const API_KEY = 'AIzaSyBuYJnQGPUbW9OrzBeX2AZKuFPfRTwAf_o';
 
@@ -145,11 +145,18 @@ const TaskView = () => {
 
     navigate('/task-list');
   };
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('loginTime');
+    navigate('/login');
+  };
+
 
   return (
     <div>
       <h2>Task Create Page</h2>
       <button onClick={() => navigate('/dashboard')}>Go Back to Home</button>
+      <button onClick={handleLogout} style={{ position: 'absolute', right: '10px', top: '10px' }}>Logout</button>
       <form onSubmit={handleFormSubmit} className="task-form">
         <div>
           <label>Task Details:</label>
